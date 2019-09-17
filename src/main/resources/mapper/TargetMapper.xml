@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="csu.cw.dao.TargetDao">
+
+	<select id="findTarget"  resultType="csu.cw.entity.NewsPage">
+		select * from t_target where keyworlds = #{keyworlds}
+	</select>
+
+	<insert id="addTarget" parameterType="csu.cw.entity.NewsPage">
+		insert into t_target(newsUrl, keyworlds) values(#{newsUrl}, #{keyworlds})
+	</insert>
+
+	<select id="findTargetByUrl" resultType="csu.cw.entity.NewsPage" parameterType="csu.cw.entity.NewsPage">
+		select * from t_target where newsUrl = #{newsUrl} and keyworlds = #{keyworlds}
+	</select>
+
+
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="csu.cw.dao.PageInfoDao">
+
+	<select id="findPageInfo"  resultType="csu.cw.entity.PageInfo">
+		select * from t_pageInfo
+	</select>
+
+	<select id="selectPageInfoByUrl"  resultType="csu.cw.entity.PageInfo">
+		select * from t_pageInfo where url = #{url}
+	</select>
+
+	<insert id="addPageInfo" parameterType="csu.cw.entity.PageInfo">
+		insert into t_pageInfo(url, content, htmlSource, dateTime, title, country, city) values(#{url}, #{content}, #{htmlSource}, #{dateTime}, #{title}, #{country}, #{city})
+	</insert>
+
+	<insert id="getPageType" parameterType="csu.cw.entity.PageInfo" useGeneratedKeys="true" keyProperty="id">
+		insert into t_pageInfo(url, content, htmlSource, dateTime, title, country, city, keyworlds) values(#{url}, #{content}, #{htmlSource}, #{dateTime}, #{title}, #{country}, #{city}, #{keyworlds})
+	</insert>
+
+	<select id="selectPageInfoByKey" resultType="csu.cw.entity.PageInfo">
+		SELECT * from t_pageInfo where keyworlds = #{key}
+	</select>
+
+</mapper>

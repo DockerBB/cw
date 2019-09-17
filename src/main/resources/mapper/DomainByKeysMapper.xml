@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="csu.cw.dao.DomainByKeysDao">
+
+	<select id="findDomainByKeys"  resultType="csu.cw.entity.DomainByKeys">
+		select * from t_mainbykeys where keyworlds = #{keyworlds}
+	</select>
+
+	<insert id="addDomainByKeys" parameterType="csu.cw.entity.DomainByKeys">
+		insert into t_mainbykeys(doMainName, keyworlds) values(#{doMainName}, #{keyworlds})
+	</insert>
+
+
+</mapper>

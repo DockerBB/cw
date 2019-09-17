@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <link href="../bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="../bootstrap/css/bootstrap-table.min.css" rel="stylesheet" type="text/css">
+    <link href="../bootstrap/css/components.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="../bootstrap/css/fileinput.min.css" >
+    <script type="text/javascript" src="../bootstrap/js/jquery.js"></script>
+    <script type="text/javascript" src="../bootstrap/js/bootstrap-table.js"></script>
+    <script type="text/javascript" src="../bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript" src="../bootstrap/js/fileinput.min.js"></script>
+    <script type="text/javascript" src="../bootstrap/js/locales/zh.js"></script>
+    <style>
+        table td,th{
+            text-align:center;vertical-align:middle;
+            vertical-align:middle !important;
+            word-break: break-all;
+        }
+        table{
+            table-layout:fixed;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>数据表</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-7"></div>
+        <!--<div class="col-md-4">-->
+            <!--<form action="/file/upload" method="post" enctype="multipart/form-data">-->
+                <!--文件:<input type="file" name="file"/>-->
+                <!--<input type="submit">-->
+            <!--</form>-->
+        <!--</div>-->
+        <div class="col-md-4">
+            <input type="text" class="form-control" id="name" placeholder="请输入url或者关键字">
+        </div>
+        <div class="col-md-1">
+            <button class="btn btn-primary" onclick="searchByUrl()">查询</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-hover">
+                <thead>
+                    <th id="pageId">ID</th>
+                    <th id="url">url</th>
+                    <th id="content">content</th>
+                    <th id="htmlSource">htmlSource</th>
+                    <th id="date">date</th>
+                    <th id="title">title</th>
+                    <th id="country">country</th>
+                    <th id="author">author</th>
+                    <th id="city">city</th>
+                    <th id="keyworlds">keyworlds</th>
+                </thead>
+                <tbody id="tem">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <!-- 记录数-->
+        <div class="col-md-6" id="info">
+
+        </div>
+        <div class="col-md-6">
+            <nav aria-label="Page navigation">
+                <ul class="pagination" id="page">
+
+
+                    <!--<li>-->
+                        <!--<a href="#" aria-label="Next">-->
+                            <!--<span aria-hidden="true">&raquo;</span>-->
+                        <!--</a>-->
+                    <!--</li>-->
+                    <!--<li><a href="#">末页</a></li>-->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var string = $("#name").val();
+        $.ajax({
+            url: "/pageInfo/selectPageInfo",
+            type: "post",
+            dataType: "json",
+            data: {
+                pageNum: 1,
+                pageSize: 5,
+            },
+            success: function (data) {
+                var pageInfo = data.pageInfo;
+                var row = pageInfo.list;
+                var htm = "";
+                for(var i=0; i<row.length; i++){
+                    htm += "<tr>";
+                    //htm += "<td>" + row[i].id + "</td>";
+                    htm += "<td>" + ((pageInfo.pageNum-1)*pageInfo.pageSize + i + 1) + "</td>";
+                    htm += "<td>" + row[i].url + "</td>";
+                    //htm += "<td>" + row[i].content + "</td>";
+                    //htm += "<td>" + row[i].htmlSource + "</td>";
+                    htm += "<td><textarea rows='11' style='width: 120%'>" + row[i].content + "</textarea></td>";
+                    htm += "<td><textarea rows='11' style='width: 120%'>" + row[i].htmlSource + "</textarea></td>";
+                    htm += "<td>" + row[i].dateTime + "</td>";
+                    htm += "<td>" + row[i].title + "</td>";
+                    htm += "<td>" + row[i].country + "</td>";
+                    htm += "<td>" + row[i].author + "</td>";
+                    htm += "<td>" + row[i].city + "</td>";
+                    htm += "<td>" + row[i].keyworlds + "</td>";
+                    htm += "</tr>";
+                }
+                $("#tem").html(htm);
+                var stringOne = "";
+                stringOne = "当前" + pageInfo.pageNum + "页" + ", 总" + pageInfo.pages + "页, " + "总" + pageInfo.total + "条记录数";
+                $("#info").html(stringOne);
+                var rowOne = pageInfo.navigatepageNums;
+                var rowOneHtml = "";
+                rowOneHtml += "<li><button type='button' class='btn btn-default navbar-btn' id=" + 1 + " onclick='send(id)'>" + "首页" + "</button></li>";
+                for(var i=0; i<rowOne.length; i++){
+                    if(pageInfo.pageNum == rowOne[i]){
+                        //rowOneHtml += "<li class='active'><a href='#'>" + rowOne[i] + "</a></li>";
+                        rowOneHtml += "<li><button type='button' class='btn btn-default navbar-btn' id=" + rowOne[i] + "  onclick='send(id)'>" + rowOne[i] + "</button></li>";
+                    }else{
+                        //rowOneHtml += "<li><a href='/pageInfo/selectPageInfo?pageNum='" + rowOne[i] + ">" + rowOne[i] + "</a></li>";
+                        rowOneHtml += "<li><button type='button' class='btn btn-default navbar-btn' id=" + rowOne[i] + "  onclick='send(id)'>" + rowOne[i] + "</button></li>";
+                    }
+                }
+                rowOneHtml += "<li><button type='button' class='btn btn-default navbar-btn' id=" + pageInfo.pages + "  onclick='send(id)'>" + "末页" + "</button></li>";
+                $("#page").html(rowOneHtml);
+            }
+        });
+    })
+    
+    function send(id) {
+        $.ajax({
+            url: "/pageInfo/selectPageInfo",
+            type: "post",
+            dataType: "json",
+            data: {
+                pageNum: id,
+                pageSize: 5,
+            },
+            success: function (data) {
+                var pageInfo = data.pageInfo;
+                var row = pageInfo.list;
+                var htm = "";
+                for(var i=0; i<row.length; i++){
+                    htm += "<tr>";
+                    //htm += "<td>" + row[i].id + "</td>";
+                    htm += "<td>" + ((pageInfo.pageNum-1)*pageInfo.pageSize + i + 1) + "</td>";
+                    htm += "<td>" + row[i].url + "</td>";
+                    //htm += "<td>" + row[i].content + "</td>";
+                    //htm += "<td>" + row[i].htmlSource + "</td>";
+                    htm += "<td><textarea rows='11' style='width: 120%'>" + row[i].content + "</textarea></td>";
+                    htm += "<td><textarea rows='11' style='width: 120%'>" + row[i].htmlSource + "</textarea></td>";
+                    htm += "<td>" + row[i].dateTime + "</td>";
+                    htm += "<td>" + row[i].title + "</td>";
+                    htm += "<td>" + row[i].country + "</td>";
+                    htm += "<td>" + row[i].author + "</td>";
+                    htm += "<td>" + row[i].city + "</td>";
+                    htm += "<td>" + row[i].keyworlds + "</td>";
+                    htm += "</tr>";
+                }
+                $("#tem").html(htm);
+                var stringOne = "";
+                stringOne = "当前" + pageInfo.pageNum + "页" + ", 总" + pageInfo.pages + "页, " + "总" + pageInfo.total + "条记录数";
+                console.log(stringOne);
+                $("#info").html(stringOne);
+                var rowOne = pageInfo.navigatepageNums;
+                var rowOneHtml = "";
+                rowOneHtml += "<li><button type='button' class='btn btn-default navbar-btn' id=" + 1 + " onclick='send(id)'>" + "首页" + "</button></li>";
+                for(var i=0; i<rowOne.length; i++){
+                    if(pageInfo.pageNum == rowOne[i]){
+                        //rowOneHtml += "<li class='active'><a href='#'>" + rowOne[i] + "</a></li>";
+                        rowOneHtml += "<li><button type='button' class='btn btn-default navbar-btn' id=" + rowOne[i] + "  onclick='send(id)'>" + rowOne[i] + "</button></li>";
+                    }else{
+                        //rowOneHtml += "<li><a href='/pageInfo/selectPageInfo?pageNum='" + rowOne[i] + ">" + rowOne[i] + "</a></li>";
+                        rowOneHtml += "<li><button type='button' class='btn btn-default navbar-btn' id=" + rowOne[i] + "  onclick='send(id)'>" + rowOne[i] + "</button></li>";
+                    }
+                }
+                rowOneHtml += "<li><button type='button' class='btn btn-default navbar-btn' id=" + pageInfo.pages + "  onclick='send(id)'>" + "末页" + "</button></li>";
+                $("#page").html(rowOneHtml);
+            }
+        });
+    }
+    
+    function searchByUrl() {
+        var string = $("#name").val();
+        $.ajax({
+            url: "/pageInfo/selectPageInfoByUrl",
+            type: "post",
+            dataType: "json",
+            data: {
+                url : string
+            },
+            success: function (data) {
+                var message = data.message;
+                console.log(message);
+                if(message == "success"){
+                    alert("请先去爬取具体url");
+                }else{
+                    var pageInfo = data.pageInfo;
+                    var row = pageInfo.list;
+                    var htm = "";
+                    for(var i=0; i<row.length; i++){
+                        htm += "<tr>";
+                        //htm += "<td>" + row[i].id + "</td>";
+                        htm += "<td>" + ((pageInfo.pageNum-1)*pageInfo.pageSize + i + 1) + "</td>";
+                        htm += "<td>" + row[i].url + "</td>";
+                        //htm += "<td>" + row[i].content + "</td>";
+                        //htm += "<td>" + row[i].htmlSource + "</td>";
+                        htm += "<td><textarea rows='11' style='width: 120%'>" + row[i].content + "</textarea></td>";
+                        htm += "<td><textarea rows='11' style='width: 120%'>" + row[i].htmlSource + "</textarea></td>";
+                        htm += "<td>" + row[i].dateTime + "</td>";
+                        htm += "<td>" + row[i].title + "</td>";
+                        htm += "<td>" + row[i].country + "</td>";
+                        htm += "<td>" + row[i].author + "</td>";
+                        htm += "<td>" + row[i].city + "</td>";
+                        htm += "<td>" + row[i].keyworlds + "</td>";
+                        htm += "</tr>";
+                    }
+                    $("#tem").html(htm);
+                    var stringOne = "";
+                    stringOne = "当前" + pageInfo.pageNum + "页" + ", 总" + pageInfo.pages + "页, " + "总" + pageInfo.total + "条记录数";
+                    $("#info").html(stringOne);
+                    var rowOne = pageInfo.navigatepageNums;
+                    var rowOneHtml = "";
+                    rowOneHtml += "<li><button type='button' class='btn btn-default navbar-btn' id=" + 1 + " onclick='send(id)'>" + "首页" + "</button></li>";
+                    for(var i=0; i<rowOne.length; i++){
+                        if(pageInfo.pageNum == rowOne[i]){
+                            //rowOneHtml += "<li class='active'><a href='#'>" + rowOne[i] + "</a></li>";
+                            rowOneHtml += "<li><button type='button' class='btn btn-default navbar-btn' id=" + rowOne[i] + "  onclick='send(id)'>" + rowOne[i] + "</button></li>";
+                        }else{
+                            //rowOneHtml += "<li><a href='/pageInfo/selectPageInfo?pageNum='" + rowOne[i] + ">" + rowOne[i] + "</a></li>";
+                            rowOneHtml += "<li><button type='button' class='btn btn-default navbar-btn' id=" + rowOne[i] + "  onclick='send(id)'>" + rowOne[i] + "</button></li>";
+                        }
+                    }
+                    rowOneHtml += "<li><button type='button' class='btn btn-default navbar-btn' id=" + pageInfo.pages + "  onclick='send(id)'>" + "末页" + "</button></li>";
+                    $("#page").html(rowOneHtml);
+                }
+//                var pageInfo = data.pageInfo;
+//                var row = pageInfo.list;
+//                var htm = "";
+//                for(var i=0; i<row.length; i++){
+//                    htm += "<tr>";
+//                    //htm += "<td>" + row[i].id + "</td>";
+//                    htm += "<td>" + ((pageInfo.pageNum-1)*pageInfo.pageSize + i + 1) + "</td>";
+//                    htm += "<td>" + row[i].url + "</td>";
+//                    //htm += "<td>" + row[i].content + "</td>";
+//                    //htm += "<td>" + row[i].htmlSource + "</td>";
+//                    htm += "<td><textarea rows='11' style='width: 120%'>" + row[i].content + "</textarea></td>";
+//                    htm += "<td><textarea rows='11' style='width: 120%'>" + row[i].htmlSource + "</textarea></td>";
+//                    htm += "<td>" + row[i].dateTime + "</td>";
+//                    htm += "<td>" + row[i].title + "</td>";
+//                    htm += "<td>" + row[i].country + "</td>";
+//                    htm += "<td>" + row[i].author + "</td>";
+//                    htm += "<td>" + row[i].city + "</td>";
+//                    htm += "</tr>";
+//                }
+//                $("#tem").html(htm);
+//                var stringOne = "";
+//                stringOne = "当前" + pageInfo.pageNum + "页" + ", 总" + pageInfo.pages + "页, " + "总" + pageInfo.total + "条记录数";
+//                $("#info").html(stringOne);
+//                var rowOne = pageInfo.navigatepageNums;
+//                var rowOneHtml = "";
+//                rowOneHtml += "<li><button type='button' class='btn btn-default navbar-btn' id=" + 1 + " onclick='send(id)'>" + "首页" + "</button></li>";
+//                for(var i=0; i<rowOne.length; i++){
+//                    if(pageInfo.pageNum == rowOne[i]){
+//                        //rowOneHtml += "<li class='active'><a href='#'>" + rowOne[i] + "</a></li>";
+//                        rowOneHtml += "<li><button type='button' class='btn btn-default navbar-btn' id=" + rowOne[i] + "  onclick='send(id)'>" + rowOne[i] + "</button></li>";
+//                    }else{
+//                        //rowOneHtml += "<li><a href='/pageInfo/selectPageInfo?pageNum='" + rowOne[i] + ">" + rowOne[i] + "</a></li>";
+//                        rowOneHtml += "<li><button type='button' class='btn btn-default navbar-btn' id=" + rowOne[i] + "  onclick='send(id)'>" + rowOne[i] + "</button></li>";
+//                    }
+//                }
+//                rowOneHtml += "<li><button type='button' class='btn btn-default navbar-btn' id=" + pageInfo.pages + "  onclick='send(id)'>" + "末页" + "</button></li>";
+//                $("#page").html(rowOneHtml);
+            }
+        });
+    }
+    
+</script>
+</body>
+</html>

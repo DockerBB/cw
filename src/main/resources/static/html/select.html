@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>查询</title>
+    <link href="../bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+    <script type="text/javascript" src="../bootstrap/js/jquery.js"></script>
+    <script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <td>ID</td>
+            <td>url</td>
+            <td>content</td>
+            <td>htmlSource</td>
+            <td>date</td>
+            <td>title</td>
+            <td>country</td>
+            <td>author</td>
+            <td>city</td>
+        </tr>
+    </thead>
+    <tbody id="thread">
+
+    </tbody>
+</table>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.ajax({
+            url: "/pageInfo/findPageInfo",
+            type: 'post',
+            dataType: 'json',
+            contentType: "application/json",
+            success: success
+        });
+    })
+
+    function success(data) {
+        var htm = "";
+        for(var i=0; i<data.length; i++){
+            htm += "<tr>";
+            htm += "<td>" + data[i].id + "</td>";
+            htm += "<td>" + data[i].url + "</td>";
+            htm += "<td>" + data[i].content + "</td>";
+            htm += "<td>" + data[i].htmlSource + "</td>";
+            htm += "<td>" + data[i].date + "</td>";
+            htm += "<td>" + data[i].title + "</td>";
+            htm += "<td>" + data[i].country + "</td>";
+            htm += "<td>" + data[i].author + "</td>";
+            htm += "<td>" + data[i].city + "</td>";
+            htm += "</tr>";
+        }
+        $("#thread").html(htm);
+    };
+
+</script>
+<!--<script type="text/javascript">-->
+    <!--$(document).ready(function () {-->
+        <!--$.ajax({-->
+            <!--url: "pageInfo/findPageInfo",-->
+            <!--type: 'post',-->
+            <!--dataType: 'json',-->
+            <!--contentType: "application/json",-->
+            <!--success: success-->
+        <!--});-->
+        <!--alert("aaaaaaaa");-->
+    <!--})-->
+
+        <!--function success(data) {-->
+            <!--var htm = "";-->
+            <!--for(var i=0; i<data.length; i++){-->
+                <!--htm += "<tr>";-->
+                <!--htm += "<td>" + data[i].id + "</td>";-->
+                <!--htm += "<td>" + data[i].url + "</td>";-->
+                <!--htm += "<td>" + data[i].content + "</td>";-->
+                <!--htm += "<td>" + data[i].htmlSource + "</td>";-->
+                <!--htm += "<td>" + data[i].date + "</td>";-->
+                <!--htm += "<td>" + data[i].title + "</td>";-->
+                <!--htm += "<td>" + data[i].country + "</td>";-->
+                <!--htm += "<td>" + data[i].author + "</td>";-->
+                <!--htm += "<td>" + data[i].city + "</td>";-->
+                <!--htm += "</tr>";-->
+            <!--}-->
+            <!--$("#thread").html(htm);-->
+        <!--};-->
+<!--</script>-->
+</body>
+</html>

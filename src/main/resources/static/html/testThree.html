@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <link href="../bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="../bootstrap/css/bootstrap-table.min.css" rel="stylesheet" type="text/css">
+    <link href="../bootstrap/css/components.min.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../bootstrap/js/jquery.js"></script>
+    <script type="text/javascript" src="../bootstrap/js/bootstrap-table.js"></script>
+    <script type="text/javascript" src="../bootstrap/js/bootstrap.js"></script>
+
+    <style>
+        table td,th{
+            text-align:center;vertical-align:middle;
+            vertical-align:middle !important;
+            word-break: break-all;
+        }
+        table{
+            table-layout:fixed;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.ajax({
+            url: "/pageInfo/selectPageInfo",
+            type: "post",
+            dataType: "json",
+            data: {
+                pageNum: 1,
+                pageSize: 5,
+            },
+            success: function (data) {
+                var pageInfo = data.pageInfo;
+                var row = pageInfo.list;
+                var htm = "";
+                for(var i=0; i<row.length; i++){
+                    htm += "<tr>";
+                    htm += "<td>" + row[i].id + "</td>";
+                    htm += "<td>" + row[i].url + "</td>";
+                    htm += "<td>" + row[i].content + "</td>";
+                    htm += "<td>" + row[i].htmlSource + "</td>";
+                    htm += "<td>" + row[i].date + "</td>";
+                    htm += "<td>" + row[i].title + "</td>";
+                    htm += "<td>" + row[i].country + "</td>";
+                    htm += "<td>" + row[i].author + "</td>";
+                    htm += "<td>" + row[i].city + "</td>";
+                }
+            }
+        });
+    })
+</script>
+</body>
+</html>

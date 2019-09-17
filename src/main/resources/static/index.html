@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+    <!--<link href="bootstrap/css/bootstrap-table.min.css" rel="stylesheet" type="text/css">-->
+    <link href="bootstrap/css/components.min.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="bootstrap/js/jquery.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap-table.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
+
+    <style>
+        .a{
+            text-decoration: none;
+            color: red;
+        }
+        table td,th{
+            text-align:center;
+            vertical-align:middle !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="row" style="padding-bottom: 20px; margin-top: 20px">
+        <input type="text" class="form-control" placeholder="请输入url链接" id="urlName"/>
+        <span class="input-group-btn">
+        <button class="btn btn-info btn-search" onclick="doDeal()">提取</button>
+        </span>
+    </div>
+    <div class="row" style="padding-bottom: 20px; margin-top: 20px">
+        <div class="col-md-9">
+            <div class="input-group">
+                <input id="searchString" type="text" style="height:28px;" class="form-control" placeholder="请输入查询的url">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-info" onclick="search()" onkeypress="Enter()">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"/>
+                        搜索
+                    </button>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="pow">
+        <div class="col-md-12" style="margin-top:20px;">
+            <div class="panel panel-info">
+                <div class="panel-heading">查询结果</div>
+                <div class="table-scrollable">
+                    <table class="table table-striped table-bordered table-hover datatable" id="table">
+                        <thead>
+                        <th id="pageId" width="10%">ID</th>
+                        <th id="url" width="10%">url</th>
+                        <th id="content" width="10%">content</th>
+                        <th id="htmlSource" width="10%">htmlSource</th>
+                        <th id="date" width="10%">date</th>
+                        <th id="title" width="10%">title</th>
+                        <th id="country" width="10%">country</th>
+                        <th id="author" width="10%">author</th>
+                        <th id="city" width="10%">city</th>
+                        </thead>
+                        <tbody id="tem">
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+        <div id="bottomTool" class="row-fluid">
+            <div class="span6" style="width: 25%; margin-right: 10px;">
+                <div class="dataTables_length" id="DataTables_Table_0_length">
+                    <label>
+                        每页
+                        <select id="pageSize" onchange="research()" aria-controls="DataTables_Table_0" size="1" name="DataTables_Table_0_length">
+                            <option selected="selected" value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        条记录
+                    </label>
+                </div>
+            </div>
+            <div class="span6" style="width: 30%;">
+                <div class="dataTables_paginate paging_bootstrap pagination">
+                    <ul id="previousNext">
+                        <li onclick="previous()" class="prev disabled"><a id="previousPage" href="#">← 上一页</a></li>
+                        <div id="page" style="float:left;">
+                            <select id="pageNum" onchange="search()" style="width:50PX;margin-right:1px;" aria-controls="DataTables_Table_0" size="1" name="DataTables_Table_0_length">
+                                <option selected="selected" value="1">1</option>
+                            </select>
+                        </div>
+                        <li onclick="next()"><a id="nextPage" href="#">下一页 → </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+<script type="text/javascript">
+    window.onload = function () {
+        search();
+    };
+    document.onkeydown = function (event) {
+        if(event.keyCode == 13){
+            event.cancelBubble = true;
+            event.returnValue = false;
+            search();
+        }
+    }
+
+    function next() {
+        var id = $("#pageNum option:selected").val();
+        var  nextPage = parseInt(id) + 1;
+        var list = document.getElementById("pageNum").options;
+        var nextOption=list[nextPage-1];
+        nextOption.selected=true;
+        search();
+    }
+
+    function previous(){
+        var id=$("#pageNum option:selected").val();
+        var previousPage=parseInt(id)-1;
+        var list=document.getElementById("pageNum").options;
+        var previousOption=list[previousPage-1];
+        previousOption.selected=true;
+        search();
+    }
+
+    function research() {
+        var list=document.getElementById("pageNum").options;
+        var nextOption=list[0];
+        nextOption.selected=true;
+        search();
+    }
+
+    function search(){
+        var searchString=$("#searchString").val();
+        var pageSize=$("#pageSize").val();
+        var pageNum=$("#pageNum").val();
+        $.ajax({
+            type: "post",
+            async: false,
+            url: "/pageInfo/selectPageInfo",
+            data:{
+                "searchString":searchString,
+                "pageSize": pageSize,
+                "pageNum" : pageNum,
+            },
+            dataType: "text",
+            success: function (data) {
+                var pageEntity=JSON.parse(data);
+                //var pageEntity = data;
+                //var obj=pageEntity["rows"];
+                var obj = pageEntity.row;
+                $("thead").eq(0).nextAll().remove();
+                for (var i = 0; i < obj.length; i++) {
+                    var row = $("#tem").clone();
+                    row.find("#pageId").text(obj[i].id);
+                    row.find("#url").text(obj[i].url);
+                    row.find("#content").text(obj[i].content);
+                    row.find("#htmlSource").text(obj[i].htmlSource);
+                    row.find("#date").text(obj[i].data);
+                    row.find("#title").text(obj[i].title);
+                    row.find("#country").text(obj[i].country);
+                    row.find("#author").text(obj[i].author);
+                    row.find("#city").text(obj[i].city);
+                    row.appendTo("#table");
+                }
+                var pageNumCount=pageEntity["total"];
+                var pageNumBegin=(pageNum-1)*pageSize+1;
+                var pageNumEnd=pageNum*pageSize;
+                if(pageNumEnd>pageNumCount){
+                    pageNumEnd=pageNumCount;
+                }
+                var pageCount;
+                if(pageNumCount/pageSize==0){
+                    pageCount=pageNumCount/pageSize;
+                }else{
+                    pageCount=Math.ceil(pageNumCount/pageSize);
+                }
+
+                var pageSelect =document.getElementById("page");
+                var pageOption="";
+                var flag;
+                document.getElementById("pageNum").options.length=0;
+                for(var i=0;i<pageCount;i++){
+                    flag=(i+1).toString();
+                    var option;
+                    if(flag==pageNum){
+                        option=new Option(flag, flag, false, true);
+                    }else{
+                        option=new Option(flag, flag, false, false);
+                    }
+                    document.getElementById("pageNum").options.add(option);
+                }
+                if(pageCount==1){
+                    $("#previousPage").css("color","#AAA");
+                    $("#nextPage").css("color","#AAA");
+                }else if(pageNum-1 < 1){
+                    $("#previousPage").css("color","#AAA");
+                    $("#nextPage").css("color","#00F");
+                }else if(pageNum==pageCount){
+                    $("#previousPage").css("color","#00F");
+                    $("#nextPage").css("color","#AAA");
+                }else{
+                    $("#previousPage").css("color","#00F");
+                    $("#nextPage").css("color","#00F");
+                }
+            }
+        });
+    }
+
+</script>
+
+
+<script type="text/javascript">
+//    $(document).ready(function () {
+//        $.ajax({
+//            url: "/pageInfo/findPageInfo",
+//            type: 'post',
+//            dataType: 'json',
+//            contentType: "application/json",
+//            success: success
+//        });
+//    })
+
+    function doDeal() {
+        var url = $("#urlName").val();
+        $.ajax({
+            url: "/pageInfo/getPageType",
+            type: "post",
+            cache: false,
+            async: false,
+            dataType: "json",
+            data: {
+                url : url,
+            },
+            success: success
+        })
+    }
+
+    function success(data) {
+//        var htm = "";
+//        for(var i=0; i<data.length; i++){
+//            htm += "<tr>";
+//            htm += "<td>" + data[i].id + "</td>";
+//            htm += "<td>" + data[i].url + "</td>";
+//            htm += "<td>" + data[i].content + "</td>";
+//            htm += "<td>" + data[i].htmlSource + "</td>";
+//            htm += "<td>" + data[i].date + "</td>";
+//            htm += "<td>" + data[i].title + "</td>";
+//            htm += "<td>" + data[i].country + "</td>";
+//            htm += "<td>" + data[i].author + "</td>";
+//            htm += "<td>" + data[i].city + "</td>";
+//            htm += "</tr>";
+//        }
+//        $("#thread").html(htm);
+    };
+
+</script>
+
+</body>
+</html>
